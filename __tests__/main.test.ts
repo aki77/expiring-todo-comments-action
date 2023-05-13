@@ -1,29 +1,33 @@
-import {wait} from '../src/wait'
-import * as process from 'process'
-import * as cp from 'child_process'
-import * as path from 'path'
-import {expect, test} from '@jest/globals'
+import {test, expect} from '@jest/globals'
+import {isComment, parseBlame} from '../src/utils'
 
-test('throws invalid number', async () => {
-  const input = parseInt('foo', 10)
-  await expect(wait(input)).rejects.toThrow('milliseconds not a number')
+test('isComment', async () => {
+  expect(isComment('test.js', '// TODO: Add tests')).toEqual(true)
+  expect(isComment('test.js', 'TODO: Add tests')).toEqual(false)
+  expect(isComment('test.js', '// FIXME: Add tests')).toEqual(true)
+
+  // TODO: Support for Gemfile
+  expect(isComment('Gemfile', '# TODO: version up')).toEqual(false)
 })
 
-test('wait 500 ms', async () => {
-  const start = new Date()
-  await wait(500)
-  const end = new Date()
-  var delta = Math.abs(end.getTime() - start.getTime())
-  expect(delta).toBeGreaterThan(450)
-})
+test('parseBlame', async () => {
+  const stdout = `b0546e57f74ec824e6c5cd8601808bd54d6b141e 40 40 1
+author aki
+author-mail <aki@test.test>
+author-time 1683849528
+author-tz +0900
+committer aki
+committer-mail <aki@test.test>
+committer-time 1683849528
+committer-tz +0900
+summary First release
+previous c9c6e64d1107a46fc864209228565d0d92e75c5c src/main.ts
+filename src/main.ts
+    if (!match) return`
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_MILLISECONDS'] = '500'
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
-  }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+  expect(parseBlame(stdout)).toEqual({
+    commit: 'b0546e57f74ec824e6c5cd8601808bd54d6b141e',
+    author: 'aki',
+    date: '2023-05-12'
+  })
 })
