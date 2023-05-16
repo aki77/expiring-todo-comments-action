@@ -158,16 +158,16 @@ exports.reportSummary = void 0;
 const core = __importStar(__nccwpck_require__(7733));
 const github = __importStar(__nccwpck_require__(3695));
 const reportSummary = (results) => __awaiter(void 0, void 0, void 0, function* () {
-    const baseUrl = `${github.context.serverUrl}/${github.context.repo.owner}/${github.context.repo.repo}/blob/${github.context.sha}`;
+    const baseUrl = `${github.context.serverUrl}/${github.context.repo.owner}/${github.context.repo.repo}/`;
     const rows = results.map(({ date, comment, type, blame, file, line, isExpired }) => {
-        var _a, _b;
+        var _a;
         return [
             date ? `${isExpired ? ':bomb: ' : ''}${date}` : '',
             type,
             comment,
-            `\n\n[${file}:${line}](${baseUrl}/${file}#L${line})`,
-            (_a = blame === null || blame === void 0 ? void 0 : blame.date) !== null && _a !== void 0 ? _a : '',
-            (_b = blame === null || blame === void 0 ? void 0 : blame.author) !== null && _b !== void 0 ? _b : ''
+            `\n\n[${file}:${line}](${baseUrl}/blob/${github.context.sha}/${file}#L${line})`,
+            blame ? `\n\n[${blame.date}](${baseUrl}/commit/${blame.commit})` : '',
+            (_a = blame === null || blame === void 0 ? void 0 : blame.author) !== null && _a !== void 0 ? _a : ':ghost:'
         ];
     });
     yield core.summary
