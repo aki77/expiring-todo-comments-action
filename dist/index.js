@@ -162,7 +162,7 @@ const reportSummary = (results) => __awaiter(void 0, void 0, void 0, function* (
     const rows = results.map(({ date, comment, type, blame, file, line, isExpired }) => {
         var _a, _b;
         return [
-            isExpired && date ? `:bomb: ${date}` : '',
+            date ? `${isExpired ? ':bomb: ' : ''}${date}` : '',
             type,
             comment,
             `\n\n[${file}:${line}](${baseUrl}/${file}#L${line})`,

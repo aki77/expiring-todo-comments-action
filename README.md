@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: aki77/expiring-todo-comments-action@v1
+      - uses: aki77/expiring-todo-comments-action@main
 ```
 
 Inspired by [eslint\-plugin\-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/expiring-todo-comments.md).

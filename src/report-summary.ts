@@ -9,7 +9,7 @@ export const reportSummary = async (
 
   const rows = results.map(
     ({date, comment, type, blame, file, line, isExpired}) => [
-      isExpired && date ? `:bomb: ${date}` : '',
+      date ? `${isExpired ? ':bomb: ' : ''}${date}` : '',
       type,
       comment,
       `\n\n[${file}:${line}](${baseUrl}/${file}#L${line})`,
