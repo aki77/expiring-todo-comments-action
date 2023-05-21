@@ -261,10 +261,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseBlame = exports.formatDate = exports.isComment = void 0;
 const commentPattern = __importStar(__nccwpck_require__(4278));
+const FILE_ALIASES = {
+    Gemfile: 'Gemfile.rb'
+};
 // TODO: Do not use comment-patterns package
 const isComment = (file, text) => {
+    var _a;
+    const aliasedFilename = (_a = FILE_ALIASES[file]) !== null && _a !== void 0 ? _a : file;
     try {
-        return commentPattern.regex(file).regex.test(text);
+        return commentPattern.regex(aliasedFilename).regex.test(text);
     }
     catch (error) {
         return false;

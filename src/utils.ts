@@ -1,9 +1,14 @@
 import * as commentPattern from 'comment-patterns'
 
+const FILE_ALIASES: Record<string, string> = {
+  Gemfile: 'Gemfile.rb'
+}
+
 // TODO: Do not use comment-patterns package
 export const isComment = (file: string, text: string): boolean => {
+  const aliasedFilename = FILE_ALIASES[file] ?? file
   try {
-    return commentPattern.regex(file).regex.test(text)
+    return commentPattern.regex(aliasedFilename).regex.test(text)
   } catch (error) {
     return false
   }

@@ -5,9 +5,7 @@ test('isComment', async () => {
   expect(isComment('test.js', '// TODO: Add tests')).toEqual(true)
   expect(isComment('test.js', 'TODO: Add tests')).toEqual(false)
   expect(isComment('test.js', '// FIXME: Add tests')).toEqual(true)
-
-  // TODO: Support for Gemfile
-  expect(isComment('Gemfile', '# TODO: version up')).toEqual(false)
+  expect(isComment('Gemfile', '# TODO: version up')).toEqual(true)
 })
 
 test('parseBlame', async () => {
