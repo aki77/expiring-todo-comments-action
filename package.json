@@ -29,7 +29,7 @@
     "comment-patterns": "^0.12.2"
   },
   "devDependencies": {
-    "@jest/globals": "^29.6.1",
+    "@jest/globals": "^29.6.2",
     "@types/node": "^16.18.39",
     "@typescript-eslint/parser": "^6.2.0",
     "@vercel/ncc": "^0.36.1",
