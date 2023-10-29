@@ -1,7 +1,8 @@
 import * as commentPattern from 'comment-patterns'
 
 const FILE_ALIASES: Record<string, string> = {
-  Gemfile: 'Gemfile.rb'
+  Gemfile: 'Gemfile.rb',
+  Rakefile: 'Rakefile.rb'
 }
 
 // TODO: Do not use comment-patterns package
