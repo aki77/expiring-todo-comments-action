@@ -1,14 +1,20 @@
 import * as core from '@actions/core'
 import {exec} from 'child_process'
 import {promisify} from 'util'
-import {type Blame, formatDate, isComment, parseBlame} from './utils'
+import {
+  type Blame,
+  formatDate,
+  isComment,
+  parseBlame,
+  parseTodoComment,
+  type TodoComment
+} from './utils'
 import {reportSummary} from './report-summary'
 import {sortBy} from './sort-by'
 
 const execAsync = promisify(exec)
 
 const LINE_PATTERN = /^(\S+):(\d+):(.*)$/
-const TODO_PATTERN = /\s(TODO|FIXME)\s?(?:\[(\d{4}-\d{2}-\d{2})\])?:(.*)$/
 
 type TodoCommentLine = {
   file: string
@@ -16,27 +22,11 @@ type TodoCommentLine = {
   text: string
 }
 
-type TodoComment = {
-  date: string | undefined
-  comment: string
-  type: 'TODO' | 'FIXME'
-}
-
 export type Result = Pick<TodoCommentLine, 'file' | 'line'> &
   TodoComment & {
     blame: Blame
     isExpired: boolean
   }
-
-const parseTodoComment = (text: string): TodoComment | undefined => {
-  const match = text.match(TODO_PATTERN)
-  if (!match) return
-
-  const [, type, date, comment] = match
-  if (type !== 'TODO' && type !== 'FIXME') return
-
-  return {date, comment, type}
-}
 
 // TODO: Add tests
 const getBlame = async (
