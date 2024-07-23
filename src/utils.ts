@@ -5,6 +5,9 @@ const FILE_ALIASES: Record<string, string> = {
   Rakefile: 'Rakefile.rb'
 }
 
+const TODO_PATTERN =
+  /\s(TODO|FIXME)\s?(?:\s(?:\((?:[^)]+)\)|@(?:\w+)))?\s*(?:\[(\d{4}-\d{2}-\d{2})\])?:\s*(.*)$/i
+
 // TODO: Do not use comment-patterns package
 export const isComment = (file: string, text: string): boolean => {
   const aliasedFilename = FILE_ALIASES[file] ?? file
@@ -13,6 +16,23 @@ export const isComment = (file: string, text: string): boolean => {
   } catch (error) {
     return false
   }
+}
+
+export type TodoComment = {
+  date: string | undefined
+  comment: string
+  type: 'TODO' | 'FIXME'
+}
+
+export const parseTodoComment = (text: string): TodoComment | undefined => {
+  const match = text.match(TODO_PATTERN)
+  if (!match) return
+
+  const [, _type, date, comment] = match
+  const type = _type.toUpperCase()
+  if (type !== 'TODO' && type !== 'FIXME') return
+
+  return {date, comment, type}
 }
 
 export const formatDate = (date: Date): string => {

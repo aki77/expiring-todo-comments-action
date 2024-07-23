@@ -47,16 +47,6 @@ const report_summary_1 = __nccwpck_require__(7888);
 const sort_by_1 = __nccwpck_require__(4637);
 const execAsync = (0, util_1.promisify)(child_process_1.exec);
 const LINE_PATTERN = /^(\S+):(\d+):(.*)$/;
-const TODO_PATTERN = /\s(TODO|FIXME)\s?(?:\[(\d{4}-\d{2}-\d{2})\])?:(.*)$/;
-const parseTodoComment = (text) => {
-    const match = text.match(TODO_PATTERN);
-    if (!match)
-        return;
-    const [, type, date, comment] = match;
-    if (type !== 'TODO' && type !== 'FIXME')
-        return;
-    return { date, comment, type };
-};
 // TODO: Add tests
 const getBlame = (file, line) => __awaiter(void 0, void 0, void 0, function* () {
     const { stdout } = yield execAsync(`git blame --line-porcelain -L ${line},${line} ${file}`);
@@ -89,7 +79,7 @@ function run() {
                 const blame = yield getBlame(file, line);
                 if (!blame)
                     return;
-                const todoComment = parseTodoComment(text);
+                const todoComment = (0, utils_1.parseTodoComment)(text);
                 if (!todoComment)
                     return;
                 const isExpired = !!(todoComment.date && todoComment.date < todayString);
@@ -258,12 +248,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseBlame = exports.formatDate = exports.isComment = void 0;
+exports.parseBlame = exports.formatDate = exports.parseTodoComment = exports.isComment = void 0;
 const commentPattern = __importStar(__nccwpck_require__(9412));
 const FILE_ALIASES = {
     Gemfile: 'Gemfile.rb',
     Rakefile: 'Rakefile.rb'
 };
+const TODO_PATTERN = /\s(TODO|FIXME)\s?(?:\s(?:\((?:[^)]+)\)|@(?:\w+)))?\s*(?:\[(\d{4}-\d{2}-\d{2})\])?:\s*(.*)$/i;
 // TODO: Do not use comment-patterns package
 const isComment = (file, text) => {
     var _a;
@@ -276,6 +267,17 @@ const isComment = (file, text) => {
     }
 };
 exports.isComment = isComment;
+const parseTodoComment = (text) => {
+    const match = text.match(TODO_PATTERN);
+    if (!match)
+        return;
+    const [, _type, date, comment] = match;
+    const type = _type.toUpperCase();
+    if (type !== 'TODO' && type !== 'FIXME')
+        return;
+    return { date, comment, type };
+};
+exports.parseTodoComment = parseTodoComment;
 const formatDate = (date) => {
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');

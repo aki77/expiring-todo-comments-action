@@ -1,11 +1,47 @@
 import {test, expect} from '@jest/globals'
-import {isComment, parseBlame} from '../src/utils'
+import {isComment, parseBlame, parseTodoComment} from '../src/utils'
 
 test('isComment', async () => {
   expect(isComment('test.js', '// TODO: Add tests')).toEqual(true)
   expect(isComment('test.js', 'TODO: Add tests')).toEqual(false)
   expect(isComment('test.js', '// FIXME: Add tests')).toEqual(true)
   expect(isComment('Gemfile', '# TODO: version up')).toEqual(true)
+})
+
+test('parseTodoComment', async () => {
+  expect(parseTodoComment('// TODO: Add tests')).toEqual({
+    date: undefined,
+    comment: 'Add tests',
+    type: 'TODO'
+  })
+  expect(parseTodoComment('// todo: Add tests')).toEqual({
+    date: undefined,
+    comment: 'Add tests',
+    type: 'TODO'
+  })
+  expect(parseTodoComment('// FIXME [2021-10-10]: Add tests')).toEqual({
+    date: '2021-10-10',
+    comment: 'Add tests',
+    type: 'FIXME'
+  })
+  expect(
+    parseTodoComment(
+      '// TODO (lubien) [2200-12-12]: You can add something before the arguments.'
+    )
+  ).toEqual({
+    date: '2200-12-12',
+    comment: 'You can add something before the arguments.',
+    type: 'TODO'
+  })
+  expect(
+    parseTodoComment(
+      '// TODO @lubien [2200-12-12]: You can add something before the arguments.'
+    )
+  ).toEqual({
+    date: '2200-12-12',
+    comment: 'You can add something before the arguments.',
+    type: 'TODO'
+  })
 })
 
 test('parseBlame', async () => {
