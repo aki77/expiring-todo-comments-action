@@ -33,6 +33,15 @@ test('parseTodoComment', async () => {
     comment: 'You can add something before the arguments.',
     type: 'TODO'
   })
+  expect(
+    parseTodoComment(
+      '// TODO @lubien [2200-12-12]: You can add something before the arguments.'
+    )
+  ).toEqual({
+    date: '2200-12-12',
+    comment: 'You can add something before the arguments.',
+    type: 'TODO'
+  })
 })
 
 test('parseBlame', async () => {
