@@ -1,21 +1,74 @@
-import * as commentPattern from 'comment-patterns'
+const COMMENT_PATTERNS = {
+  // Languages that use # for comments (Ruby, Python, Shell, YAML, etc.)
+  hash: /#\s*(.+)$/,
+  // Languages that use // for comments (JavaScript, Java, C++, Go, etc.)
+  doubleSlash: /\/\/\s*(.+)$/,
+  // Languages that use -- for comments (SQL, Haskell, etc.)
+  doubleDash: /--\s*(.+)$/,
+  // Languages that use ; for comments (Lisp, Assembly, etc.)
+  semicolon: /;\s*(.+)$/
+} as const
 
 const FILE_ALIASES: Record<string, string> = {
-  Gemfile: 'Gemfile.rb',
-  Rakefile: 'Rakefile.rb'
-}
+  Gemfile: 'rb',
+  Rakefile: 'rb',
+  Dockerfile: 'sh',
+  Makefile: 'sh'
+} as const
+
+const LANGUAGE_PATTERNS: Record<string, keyof typeof COMMENT_PATTERNS> = {
+  // Ruby
+  rb: 'hash',
+  // JavaScript/TypeScript
+  js: 'doubleSlash',
+  ts: 'doubleSlash',
+  jsx: 'doubleSlash',
+  tsx: 'doubleSlash',
+  // Python
+  py: 'hash',
+  // Shell scripts
+  sh: 'hash',
+  bash: 'hash',
+  zsh: 'hash',
+  // YAML
+  yaml: 'hash',
+  yml: 'hash',
+  // SQL
+  sql: 'doubleDash',
+  // Other languages
+  java: 'doubleSlash',
+  cpp: 'doubleSlash',
+  c: 'doubleSlash',
+  go: 'doubleSlash',
+  lisp: 'semicolon'
+} as const
 
 const TODO_PATTERN =
   /\s(TODO|FIXME)\s?(?:\s(?:\((?:[^)]+)\)|@(?:\w+)))?\s*(?:\[(\d{4}-\d{2}-\d{2})\])?:\s*(.*)$/i
 
-// TODO: Do not use comment-patterns package
 export const isComment = (file: string, text: string): boolean => {
-  const aliasedFilename = FILE_ALIASES[file] ?? file
-  try {
-    return commentPattern.regex(aliasedFilename).regex.test(text)
-  } catch (_error) {
+  const basename = file.split('/').pop() || file
+
+  // 1. First check for file name aliases (for files without extensions)
+  const aliasedExt = FILE_ALIASES[basename]
+  if (aliasedExt) {
+    const patternKey = LANGUAGE_PATTERNS[aliasedExt]
+    if (patternKey) {
+      const pattern = COMMENT_PATTERNS[patternKey]
+      return pattern.test(text)
+    }
+  }
+
+  // 2. Check by file extension
+  const ext = basename.split('.').pop() || basename
+  const patternKey = LANGUAGE_PATTERNS[ext]
+
+  if (!patternKey) {
     return false
   }
+
+  const pattern = COMMENT_PATTERNS[patternKey]
+  return pattern.test(text)
 }
 
 export type TodoComment = {
