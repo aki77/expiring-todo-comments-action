@@ -1,0 +1,76 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "vcs": {"enabled": false, "clientKind": "git", "useIgnoreFile": false},
+  "files": {
+    "ignoreUnknown": false,
+    "includes": ["**", "!dist/**", "!lib/**", "!node_modules/**"]
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 80,
+    "attributePosition": "auto",
+    "bracketSameLine": false,
+    "bracketSpacing": false,
+    "expand": "auto",
+    "useEditorconfig": true,
+    "includes": ["**", "!**/dist/**", "!**/lib/**", "!**/node_modules/**"]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false,
+      "complexity": {
+        "noStaticOnlyClass": "error",
+        "noUselessConstructor": "error"
+      },
+      "correctness": {"noUnusedVariables": "error"},
+      "style": {
+        "noCommonJs": "error",
+        "noInferrableTypes": "error",
+        "noNamespace": "error",
+        "noNonNullAssertion": "warn",
+        "useArrayLiterals": "error",
+        "useConsistentArrayType": "error",
+        "useConsistentMemberAccessibility": {
+          "level": "error",
+          "options": {"accessibility": "noPublic"}
+        },
+        "useForOf": "warn",
+        "useShorthandFunctionType": "warn"
+      },
+      "suspicious": {
+        "noExplicitAny": "error",
+        "noMisleadingInstantiator": "error"
+      }
+    },
+    "includes": [
+      "**",
+      "!**/dist/**",
+      "!**/lib/**",
+      "!**/node_modules/**",
+      "!**/jest.config.js"
+    ]
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "none",
+      "semicolons": "asNeeded",
+      "arrowParentheses": "asNeeded",
+      "bracketSameLine": false,
+      "quoteStyle": "single",
+      "attributePosition": "auto",
+      "bracketSpacing": false
+    }
+  },
+  "html": {"formatter": {"selfCloseVoidElements": "always"}},
+  "assist": {
+    "enabled": true,
+    "actions": {"source": {"organizeImports": "on"}}
+  }
+}

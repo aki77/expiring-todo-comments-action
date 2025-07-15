@@ -13,7 +13,7 @@ export const isComment = (file: string, text: string): boolean => {
   const aliasedFilename = FILE_ALIASES[file] ?? file
   try {
     return commentPattern.regex(aliasedFilename).regex.test(text)
-  } catch (error) {
+  } catch (_error) {
     return false
   }
 }
