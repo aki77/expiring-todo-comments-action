@@ -1,6 +1,8 @@
 import * as core from '@actions/core'
 import {exec} from 'child_process'
 import {promisify} from 'util'
+import {reportSummary} from './report-summary'
+import {sortBy} from './sort-by'
 import {
   type Blame,
   formatDate,
@@ -9,8 +11,6 @@ import {
   parseTodoComment,
   type TodoComment
 } from './utils'
-import {reportSummary} from './report-summary'
-import {sortBy} from './sort-by'
 
 const execAsync = promisify(exec)
 
