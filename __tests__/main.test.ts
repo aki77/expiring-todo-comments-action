@@ -2,10 +2,42 @@ import {expect, test} from '@jest/globals'
 import {isComment, parseBlame, parseTodoComment} from '../src/utils'
 
 test('isComment', async () => {
+  // JavaScript/TypeScript
   expect(isComment('test.js', '// TODO: Add tests')).toEqual(true)
   expect(isComment('test.js', 'TODO: Add tests')).toEqual(false)
   expect(isComment('test.js', '// FIXME: Add tests')).toEqual(true)
+  expect(isComment('test.js', 'code() // TODO: Fix this')).toEqual(true)
+  expect(isComment('test.ts', 'const x = 1 // TODO: Update')).toEqual(true)
+
+  // Ruby - 行頭コメント
   expect(isComment('Gemfile', '# TODO: version up')).toEqual(true)
+  expect(isComment('fixtures/Gemfile', '# TODO: version up')).toEqual(true)
+  expect(isComment('fixtures/Rakefile', '# TODO: add tests')).toEqual(true)
+
+  // Ruby - 行末コメント（重要なテストケース）
+  expect(isComment('Gemfile', "gem 'test' # TODO: Update")).toEqual(true)
+  expect(
+    isComment(
+      'fixtures/Gemfile',
+      "gem 'commonmarker', '2.0.4' # TODO[2025-04-30]: Update"
+    )
+  ).toEqual(true)
+  expect(isComment('Rakefile', 'task :test # TODO: Add description')).toEqual(
+    true
+  )
+  expect(isComment('test.rb', 'def method # FIXME: Refactor')).toEqual(true)
+
+  // Python
+  expect(isComment('test.py', '# TODO: Add tests')).toEqual(true)
+  expect(isComment('test.py', 'def func(): # TODO: Implement')).toEqual(true)
+
+  // SQL
+  expect(
+    isComment('test.sql', 'SELECT * FROM table -- TODO: Optimize')
+  ).toEqual(true)
+
+  // 未対応の言語
+  expect(isComment('test.unknown', '# TODO: Add tests')).toEqual(false)
 })
 
 test('parseTodoComment', async () => {

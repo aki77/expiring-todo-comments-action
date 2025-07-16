@@ -1,0 +1,20 @@
+require "bundler/gem_tasks"
+require "rspec/core/rake_task"
+
+RSpec::Core::RakeTask.new(:spec)
+
+# TODO [2025-02-01]: Add more comprehensive tests
+task default: :spec
+
+desc "Run linter"
+task :lint do
+  # FIXME [2024-12-25]: Fix rubocop configuration
+  sh "rubocop"
+end
+
+desc "Run tests with coverage"
+task :coverage do
+  # TODO: Implement code coverage reporting
+  ENV["COVERAGE"] = "true"
+  Rake::Task["spec"].invoke
+end

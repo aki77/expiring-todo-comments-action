@@ -3,7 +3,13 @@
   "vcs": {"enabled": false, "clientKind": "git", "useIgnoreFile": false},
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!dist/**", "!lib/**", "!node_modules/**"]
+    "includes": [
+      "**",
+      "!dist/**",
+      "!lib/**",
+      "!node_modules/**",
+      "!fixtures/**"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -17,7 +23,13 @@
     "bracketSpacing": false,
     "expand": "auto",
     "useEditorconfig": true,
-    "includes": ["**", "!**/dist/**", "!**/lib/**", "!**/node_modules/**"]
+    "includes": [
+      "**",
+      "!**/dist/**",
+      "!**/lib/**",
+      "!**/node_modules/**",
+      "!fixtures/**"
+    ]
   },
   "linter": {
     "enabled": true,

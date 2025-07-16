@@ -14,9 +14,6 @@ importers:
       '@actions/github':
         specifier: ^6.0.1
         version: 6.0.1
-      comment-patterns:
-        specifier: ^0.12.2
-        version: 0.12.2
     devDependencies:
       '@biomejs/biome':
         specifier: 2.1.1
@@ -627,9 +624,6 @@ packages:
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
 
-  comment-patterns@0.12.2:
-    resolution: {integrity: sha512-yA1FeubMSK0MXzapPm1uNdxyGk0mTAn5qrsVS6uQUSDOpUgWVLCqsgZfA/lhRx6TCLr1MvxeRqXOb1peWXWg3Q==}
-
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
@@ -1043,9 +1037,6 @@ packages:
 
   lodash.memoize@4.1.2:
     resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
-
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
@@ -2141,10 +2132,6 @@ snapshots:
 
   color-name@1.1.4: {}
 
-  comment-patterns@0.12.2:
-    dependencies:
-      lodash: 4.17.21
-
   concat-map@0.0.1: {}
 
   convert-source-map@2.0.0: {}
@@ -2703,8 +2690,6 @@ snapshots:
       p-locate: 4.1.0
 
   lodash.memoize@4.1.2: {}
-
-  lodash@4.17.21: {}
 
   lru-cache@5.1.1:
     dependencies:
