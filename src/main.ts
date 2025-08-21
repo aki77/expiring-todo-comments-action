@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import {exec} from 'child_process'
 import {promisify} from 'util'
+import {createIssueCreator} from './create-issues'
 import {reportSummary} from './report-summary'
 import {sortBy} from './sort-by'
 import {
@@ -36,7 +37,23 @@ const getBlame = async (
   const {stdout} = await execAsync(
     `git blame --line-porcelain -L ${line},${line} ${file}`
   )
-  return parseBlame(stdout)
+
+  // Debug: Log raw git blame output
+  core.debug(`Git blame output for ${file}:${line}:`)
+  core.debug(stdout)
+
+  const blame = parseBlame(stdout)
+
+  // Debug: Log parsed blame information
+  if (blame) {
+    core.debug(`Parsed blame info:`)
+    core.debug(`  - commit: ${blame.commit}`)
+    core.debug(`  - author: ${blame.author}`)
+    core.debug(`  - authorEmail: ${blame.authorEmail}`)
+    core.debug(`  - date: ${blame.date}`)
+  }
+
+  return blame
 }
 
 // TODO [2021-10-10]: Add tests
@@ -87,6 +104,16 @@ async function run(): Promise<void> {
 
     core.debug(JSON.stringify(sortedResults))
     await reportSummary(sortedResults)
+
+    const createIssues = core.getInput('create-issues') === 'true'
+    const githubToken = core.getInput('github-token')
+
+    if (createIssues && githubToken) {
+      const issueCreator = createIssueCreator(githubToken)
+      await issueCreator.createIssuesForExpiredTodos(sortedResults)
+    } else if (createIssues && !githubToken) {
+      core.warning('github-token is required to create issues')
+    }
 
     if (results.some(result => result.isExpired)) {
       core.setFailed('Some TODOs are expired!')

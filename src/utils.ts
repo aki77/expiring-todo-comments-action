@@ -99,20 +99,22 @@ export const formatDate = (date: Date): string => {
 export type Blame = {
   commit: string
   author: string
+  authorEmail?: string
   date: string
 }
 
 const BLAME_PATTERN =
-  /^(\w{40})[\s\S]+?author\s(.+?)\n[\s\S]+committer-time\s(\d+)/m
+  /^(\w{40})[\s\S]+?author\s(.+?)\nauthor-mail\s<(.+?)>\n[\s\S]+committer-time\s(\d+)/m
 
 export const parseBlame = (text: string): Blame | undefined => {
   const match = text.match(BLAME_PATTERN)
   if (!match) return
 
-  const [, commit, author, timestamp] = match
+  const [, commit, author, authorEmail, timestamp] = match
   return {
     commit,
     author,
+    authorEmail,
     date: formatDate(new Date(parseInt(timestamp, 10) * 1000))
   }
 }
