@@ -46,10 +46,38 @@ jobs:
   check-todos:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: aki77/expiring-todo-comments-action@v2
+      - uses: aki77/expiring-todo-comments-action@v3
+```
+
+### With GitHub Issue Creation
+
+To automatically create GitHub issues for expired TODOs:
+
+```yaml
+name: Check TODO Comments with Issue Creation
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'  # Run daily at 9 AM UTC
+
+jobs:
+  check-todos:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write      # Required to create issues
+      contents: read     # Required to read repository
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: aki77/expiring-todo-comments-action@v3
+        with:
+          create-issues: true
+          github-token: ${{ github.token }}
+          issue-labels: 'expired-todo,technical-debt'  # Optional: customize labels
 ```
 
 ## How It Works
@@ -60,7 +88,8 @@ The action scans your repository for TODO and FIXME comments with expiration dat
 2. **Parses** comments with the format `[YYYY-MM-DD]` to extract expiration dates
 3. **Checks** if any comments have passed their expiration date
 4. **Reports** findings in the GitHub Actions summary with file links and author information
-5. **Fails** the workflow if any expired TODO comments are found
+5. **Creates** GitHub issues for expired TODOs (optional)
+6. **Fails** the workflow if any expired TODO comments are found
 
 All date calculations use UTC timezone.
 
@@ -81,7 +110,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: aki77/expiring-todo-comments-action@v2
+      - uses: aki77/expiring-todo-comments-action@v3
 ```
 
 ### Manual Trigger
@@ -98,7 +127,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: aki77/expiring-todo-comments-action@v2
+      - uses: aki77/expiring-todo-comments-action@v3
 ```
 
 ## Best Practices

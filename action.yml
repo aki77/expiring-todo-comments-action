@@ -4,6 +4,18 @@ branding:
   icon: check-square
   color: orange
 author: 'aki77'
+inputs:
+  create-issues:
+    description: 'Create GitHub issues for expired TODOs'
+    required: false
+    default: 'false'
+  github-token:
+    description: 'GitHub token for creating issues'
+    required: false
+  issue-labels:
+    description: 'Comma-separated list of labels to add to created issues'
+    required: false
+    default: 'expired-todo'
 runs:
   using: 'node20'
   main: 'dist/index.js'
