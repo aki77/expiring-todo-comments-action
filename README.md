@@ -54,6 +54,8 @@ jobs:
 
 ### With GitHub Issue Creation
 
+![Image from Gyazo](https://i.gyazo.com/6832986e3146292760b58ac113d94805.png)
+
 To automatically create GitHub issues for expired TODOs:
 
 ```yaml
