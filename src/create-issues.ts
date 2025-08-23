@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import {getCommitAuthorInfo} from './github-commit-helper'
 import {type Result} from './main'
 
 type IssueCreator = {
@@ -33,46 +34,6 @@ export const createIssueCreator = (token: string): IssueCreator => {
     }
   }
 
-  const getUsernameFromEmail = async (
-    email: string
-  ): Promise<string | null> => {
-    try {
-      core.debug(`Looking up GitHub username for email: ${email}`)
-
-      const {data: users} = await octokit.rest.search.users({
-        q: `${email} in:email`,
-        per_page: 1
-      })
-
-      if (users.items.length > 0) {
-        core.debug(`Found user via email search: ${users.items[0].login}`)
-        return users.items[0].login
-      }
-
-      core.debug(`No user found via email search, trying username from email`)
-      const emailParts = email.split('@')
-      if (emailParts.length === 2) {
-        const username = emailParts[0]
-        core.debug(`Trying to find user with username: ${username}`)
-        try {
-          const {data: user} = await octokit.rest.users.getByUsername({
-            username
-          })
-          core.debug(`Found user via username lookup: ${user.login}`)
-          return user.login
-        } catch {
-          core.debug(`User not found with username: ${username}`)
-          return null
-        }
-      }
-
-      return null
-    } catch (error) {
-      core.debug(`Failed to get username from email ${email}: ${error}`)
-      return null
-    }
-  }
-
   const createIssueForTodo = async (result: Result): Promise<void> => {
     const identifier = generateIssueIdentifier(result)
 
@@ -82,34 +43,44 @@ export const createIssueCreator = (token: string): IssueCreator => {
       return
     }
 
-    const username = result.blame.authorEmail
-      ? await getUsernameFromEmail(result.blame.authorEmail)
-      : null
-    const mention = username ? `@${username}` : result.blame.author || 'Unknown'
+    // Get exact username from commit information via GitHub API
+    const authorInfo = await getCommitAuthorInfo(
+      token,
+      owner,
+      repo,
+      result.blame.commit,
+      result.blame.author,
+      undefined
+    )
 
-    const title = `[TODO] 期限切れ: ${result.file}:${result.line}`
+    // Use @mention if GitHub username exists, otherwise use blame.author as is
+    const mention = authorInfo.username
+      ? `@${authorInfo.username}`
+      : result.blame.author || 'Unknown'
+
+    const title = `[TODO] Expired: ${result.file}:${result.line}`
     const fileUrl = `${github.context.serverUrl}/${owner}/${repo}/blob/${github.context.sha}/${result.file}#L${result.line}`
     const commitUrl = `${github.context.serverUrl}/${owner}/${repo}/commit/${result.blame.commit}`
 
-    const body = `## 期限切れのTODOコメント
+    const body = `## Expired TODO Comment
 
-**識別子**: \`${identifier}\`
+**Identifier**: \`${identifier}\`
 
-### 詳細
-- **タイプ**: ${result.type}
-- **コメント**: ${result.comment}
-- **期限**: ${result.date}
-- **ファイル**: [${result.file}:${result.line}](${fileUrl})
-- **最終更新**: [${result.blame.date}](${commitUrl})
-- **作成者**: ${mention}
+### Details
+- **Type**: ${result.type}
+- **Comment**: ${result.comment}
+- **Due Date**: ${result.date}
+- **File**: [${result.file}:${result.line}](${fileUrl})
+- **Last Updated**: [${result.blame.date}](${commitUrl})
+- **Author**: ${mention}
 
-### コメント全文
+### Full Comment
 \`\`\`
 ${result.type}${result.date ? ` [${result.date}]` : ''}: ${result.comment}
 \`\`\`
 
 ---
-*このIssueは期限切れのTODOコメントから自動生成されました。*`
+*This issue was automatically generated from an expired TODO comment.*`
 
     const labelsInput = core.getInput('issue-labels')
     const labels = labelsInput

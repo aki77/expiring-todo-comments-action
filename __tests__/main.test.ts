@@ -94,7 +94,6 @@ filename src/main.ts
   expect(parseBlame(stdout)).toEqual({
     commit: 'b0546e57f74ec824e6c5cd8601808bd54d6b141e',
     author: 'aki',
-    authorEmail: 'aki@test.test',
     date: '2023-05-11'
   })
 })

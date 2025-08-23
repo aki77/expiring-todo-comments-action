@@ -49,7 +49,6 @@ const getBlame = async (
     core.debug(`Parsed blame info:`)
     core.debug(`  - commit: ${blame.commit}`)
     core.debug(`  - author: ${blame.author}`)
-    core.debug(`  - authorEmail: ${blame.authorEmail}`)
     core.debug(`  - date: ${blame.date}`)
   }
 

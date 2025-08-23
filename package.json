@@ -1,6 +1,6 @@
 {
   "name": "expiring-todo-comments-action",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Add expiration conditions to TODO comments",
   "main": "lib/main.js",
   "engines": {
@@ -20,7 +20,11 @@
     "type": "git",
     "url": "git+https://github.com/aki77/expiring-todo-comments-action"
   },
-  "keywords": ["actions", "node", "setup"],
+  "keywords": [
+    "actions",
+    "node",
+    "setup"
+  ],
   "author": "aki77",
   "license": "MIT",
   "dependencies": {

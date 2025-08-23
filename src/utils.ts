@@ -99,7 +99,6 @@ export const formatDate = (date: Date): string => {
 export type Blame = {
   commit: string
   author: string
-  authorEmail?: string
   date: string
 }
 
@@ -110,11 +109,10 @@ export const parseBlame = (text: string): Blame | undefined => {
   const match = text.match(BLAME_PATTERN)
   if (!match) return
 
-  const [, commit, author, authorEmail, timestamp] = match
+  const [, commit, author, , timestamp] = match
   return {
     commit,
     author,
-    authorEmail,
     date: formatDate(new Date(parseInt(timestamp, 10) * 1000))
   }
 }
