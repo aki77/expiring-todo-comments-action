@@ -52,6 +52,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createIssueCreator = void 0;
 const core = __importStar(__nccwpck_require__(9999));
 const github = __importStar(__nccwpck_require__(5380));
+const github_commit_helper_1 = __nccwpck_require__(162);
 const createIssueCreator = (token) => {
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
@@ -73,41 +74,6 @@ const createIssueCreator = (token) => {
             return false;
         }
     });
-    const getUsernameFromEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
-        try {
-            core.debug(`Looking up GitHub username for email: ${email}`);
-            const { data: users } = yield octokit.rest.search.users({
-                q: `${email} in:email`,
-                per_page: 1
-            });
-            if (users.items.length > 0) {
-                core.debug(`Found user via email search: ${users.items[0].login}`);
-                return users.items[0].login;
-            }
-            core.debug(`No user found via email search, trying username from email`);
-            const emailParts = email.split('@');
-            if (emailParts.length === 2) {
-                const username = emailParts[0];
-                core.debug(`Trying to find user with username: ${username}`);
-                try {
-                    const { data: user } = yield octokit.rest.users.getByUsername({
-                        username
-                    });
-                    core.debug(`Found user via username lookup: ${user.login}`);
-                    return user.login;
-                }
-                catch (_a) {
-                    core.debug(`User not found with username: ${username}`);
-                    return null;
-                }
-            }
-            return null;
-        }
-        catch (error) {
-            core.debug(`Failed to get username from email ${email}: ${error}`);
-            return null;
-        }
-    });
     const createIssueForTodo = (result) => __awaiter(void 0, void 0, void 0, function* () {
         const identifier = generateIssueIdentifier(result);
         const existingIssue = yield checkExistingIssue(identifier);
@@ -115,32 +81,34 @@ const createIssueCreator = (token) => {
             core.info(`Issue already exists for ${identifier}, skipping`);
             return;
         }
-        const username = result.blame.authorEmail
-            ? yield getUsernameFromEmail(result.blame.authorEmail)
-            : null;
-        const mention = username ? `@${username}` : result.blame.author || 'Unknown';
-        const title = `[TODO] 期限切れ: ${result.file}:${result.line}`;
+        // Get exact username from commit information via GitHub API
+        const authorInfo = yield (0, github_commit_helper_1.getCommitAuthorInfo)(token, owner, repo, result.blame.commit, result.blame.author, undefined);
+        // Use @mention if GitHub username exists, otherwise use blame.author as is
+        const mention = authorInfo.username
+            ? `@${authorInfo.username}`
+            : result.blame.author || 'Unknown';
+        const title = `[TODO] Expired: ${result.file}:${result.line}`;
         const fileUrl = `${github.context.serverUrl}/${owner}/${repo}/blob/${github.context.sha}/${result.file}#L${result.line}`;
         const commitUrl = `${github.context.serverUrl}/${owner}/${repo}/commit/${result.blame.commit}`;
-        const body = `## 期限切れのTODOコメント
+        const body = `## Expired TODO Comment
 
-**識別子**: \`${identifier}\`
+**Identifier**: \`${identifier}\`
 
-### 詳細
-- **タイプ**: ${result.type}
-- **コメント**: ${result.comment}
-- **期限**: ${result.date}
-- **ファイル**: [${result.file}:${result.line}](${fileUrl})
-- **最終更新**: [${result.blame.date}](${commitUrl})
-- **作成者**: ${mention}
+### Details
+- **Type**: ${result.type}
+- **Comment**: ${result.comment}
+- **Due Date**: ${result.date}
+- **File**: [${result.file}:${result.line}](${fileUrl})
+- **Last Updated**: [${result.blame.date}](${commitUrl})
+- **Author**: ${mention}
 
-### コメント全文
+### Full Comment
 \`\`\`
 ${result.type}${result.date ? ` [${result.date}]` : ''}: ${result.comment}
 \`\`\`
 
 ---
-*このIssueは期限切れのTODOコメントから自動生成されました。*`;
+*This issue was automatically generated from an expired TODO comment.*`;
         const labelsInput = core.getInput('issue-labels');
         const labels = labelsInput
             ? labelsInput.split(',').map(label => label.trim())
@@ -174,6 +142,122 @@ ${result.type}${result.date ? ` [${result.date}]` : ''}: ${result.comment}
     };
 };
 exports.createIssueCreator = createIssueCreator;
+
+
+/***/ }),
+
+/***/ 162:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getCommitAuthorInfo = exports.getGitHubUsernameFromCommit = void 0;
+const core = __importStar(__nccwpck_require__(9999));
+const github = __importStar(__nccwpck_require__(5380));
+/**
+ * Get the exact GitHub username from a commit using GitHub API
+ * @param token GitHub token
+ * @param owner Repository owner
+ * @param repo Repository name
+ * @param commitSha Commit SHA
+ * @returns GitHub username (if exists) or null
+ */
+const getGitHubUsernameFromCommit = (token, owner, repo, commitSha) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    try {
+        const octokit = github.getOctokit(token);
+        core.debug(`Fetching commit details from GitHub API for SHA: ${commitSha}`);
+        // Get commit details from GitHub API
+        const { data: commit } = yield octokit.rest.repos.getCommit({
+            owner,
+            repo,
+            ref: commitSha
+        });
+        // Check commit author information on GitHub
+        // author: User information when linked to a GitHub account
+        // commit.author: Author information from the git commit itself
+        if ((_a = commit.author) === null || _a === void 0 ? void 0 : _a.login) {
+            // When linked to a GitHub account
+            core.debug(`Found GitHub username from commit author: ${commit.author.login}`);
+            return commit.author.login;
+        }
+        // Also check committer information (may differ from author)
+        if (((_b = commit.committer) === null || _b === void 0 ? void 0 : _b.login) && commit.committer.login !== 'web-flow') {
+            // Exclude web-flow as it's a bot for commits via GitHub Web interface
+            core.debug(`Found GitHub username from committer: ${commit.committer.login}`);
+            return commit.committer.login;
+        }
+        core.debug(`No GitHub username found for commit ${commitSha}`);
+        return null;
+    }
+    catch (error) {
+        core.debug(`Failed to get GitHub username from commit ${commitSha}: ${error}`);
+        return null;
+    }
+});
+exports.getGitHubUsernameFromCommit = getGitHubUsernameFromCommit;
+/**
+ * Get author information from commit (prioritizing GitHub username)
+ * @param token GitHub token
+ * @param owner Repository owner
+ * @param repo Repository name
+ * @param commitSha Commit SHA
+ * @param fallbackAuthor Author name obtained from git blame
+ * @param fallbackEmail Email obtained from git blame (optional)
+ * @returns Author information
+ */
+const getCommitAuthorInfo = (token, owner, repo, commitSha, fallbackAuthor, fallbackEmail) => __awaiter(void 0, void 0, void 0, function* () {
+    const username = yield (0, exports.getGitHubUsernameFromCommit)(token, owner, repo, commitSha);
+    return {
+        username,
+        name: fallbackAuthor,
+        email: fallbackEmail
+    };
+});
+exports.getCommitAuthorInfo = getCommitAuthorInfo;
 
 
 /***/ }),
@@ -247,7 +331,6 @@ const getBlame = (file, line) => __awaiter(void 0, void 0, void 0, function* () 
         core.debug(`Parsed blame info:`);
         core.debug(`  - commit: ${blame.commit}`);
         core.debug(`  - author: ${blame.author}`);
-        core.debug(`  - authorEmail: ${blame.authorEmail}`);
         core.debug(`  - date: ${blame.date}`);
     }
     return blame;
@@ -532,11 +615,10 @@ const parseBlame = (text) => {
     const match = text.match(BLAME_PATTERN);
     if (!match)
         return;
-    const [, commit, author, authorEmail, timestamp] = match;
+    const [, commit, author, , timestamp] = match;
     return {
         commit,
         author,
-        authorEmail,
         date: (0, exports.formatDate)(new Date(parseInt(timestamp, 10) * 1000))
     };
 };
