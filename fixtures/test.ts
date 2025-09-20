@@ -10,7 +10,7 @@ class TestClass implements DataProcessor {
   }
 
   calculate(): number {
-    // TODO [2025-06-01]: Add type safety improvements
+    // TODO [2030-06-01]: Add type safety improvements
     let result = this.value * 2
 
     // FIXME [2024-12-05]: Use array methods instead of loops
@@ -27,7 +27,7 @@ class TestClass implements DataProcessor {
   }
 
   process(data: number[]): number[] {
-    // FIXME [2025-03-15]: Add input validation with proper error types
+    // FIXME [2030-03-15]: Add input validation with proper error types
     if (!Array.isArray(data)) {
       throw new Error('Invalid input')
     }

@@ -4,14 +4,14 @@ class TestClass
   end
 
   def calculate
-    # TODO [2025-03-01]: Optimize this algorithm
+    # TODO [2030-03-01]: Optimize this algorithm
     result = @value * 2
-    
+
     # FIXME [2024-12-20]: This method is too slow
     (1..100).each do |i|
       result += i
     end
-    
+
     result
   end
 

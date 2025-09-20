@@ -3,7 +3,7 @@ require "rspec/core/rake_task"
 
 RSpec::Core::RakeTask.new(:spec)
 
-# TODO [2025-02-01]: Add more comprehensive tests
+# TODO [2030-02-01]: Add more comprehensive tests
 task default: :spec
 
 desc "Run linter"
