@@ -1,6 +1,6 @@
 {
   "name": "expiring-todo-comments-action",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Add expiration conditions to TODO comments",
   "main": "lib/main.js",
   "engines": {

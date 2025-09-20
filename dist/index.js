@@ -114,13 +114,12 @@ ${result.type}${result.date ? ` [${result.date}]` : ''}: ${result.comment}
             ? labelsInput.split(',').map(label => label.trim())
             : ['expired-todo'];
         try {
-            const { data: issue } = yield octokit.rest.issues.create({
-                owner,
+            const issueParams = Object.assign({ owner,
                 repo,
                 title,
                 body,
-                labels
-            });
+                labels }, (authorInfo.username && { assignees: [authorInfo.username] }));
+            const { data: issue } = yield octokit.rest.issues.create(issueParams);
             core.info(`Created issue #${issue.number} for ${identifier}`);
         }
         catch (error) {
