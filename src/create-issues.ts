@@ -88,13 +88,16 @@ ${result.type}${result.date ? ` [${result.date}]` : ''}: ${result.comment}
       : ['expired-todo']
 
     try {
-      const {data: issue} = await octokit.rest.issues.create({
+      const issueParams = {
         owner,
         repo,
         title,
         body,
-        labels
-      })
+        labels,
+        ...(authorInfo.username && {assignees: [authorInfo.username]})
+      }
+
+      const {data: issue} = await octokit.rest.issues.create(issueParams)
 
       core.info(`Created issue #${issue.number} for ${identifier}`)
     } catch (error) {
