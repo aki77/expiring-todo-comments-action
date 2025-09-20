@@ -4,7 +4,7 @@ class TestClass {
   }
 
   calculate() {
-    // TODO [2025-05-01]: Implement proper error handling
+    // TODO [2030-05-01]: Implement proper error handling
     let result = this.value * 2
 
     // FIXME [2024-12-10]: This should use reduce for better performance
@@ -21,7 +21,7 @@ class TestClass {
   }
 
   processData(data) {
-    // FIXME [2025-02-15]: Validate input data
+    // FIXME [2030-02-15]: Validate input data
     if (!Array.isArray(data)) {
       return null
     }

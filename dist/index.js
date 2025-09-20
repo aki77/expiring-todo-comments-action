@@ -52,12 +52,18 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createIssueCreator = void 0;
 const core = __importStar(__nccwpck_require__(6966));
 const github = __importStar(__nccwpck_require__(4903));
+const crypto = __importStar(__nccwpck_require__(6982));
 const github_commit_helper_1 = __nccwpck_require__(8557);
 const createIssueCreator = (token) => {
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
     const generateIssueIdentifier = (result) => {
-        return `[TODO] ${result.file}:${result.line}`;
+        // Create a stable hash based on file path, TODO type, and comment content
+        // This ensures the same TODO will have the same identifier even if line numbers change
+        const contentToHash = `${result.file}:${result.type}:${result.comment.trim()}`;
+        const hash = crypto.createHash('sha256').update(contentToHash).digest('hex');
+        // Use first 8 characters of hash for readability
+        return `TODO-${hash.substring(0, 8)}`;
     };
     const checkExistingIssue = (identifier) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -108,7 +114,8 @@ ${result.type}${result.date ? ` [${result.date}]` : ''}: ${result.comment}
 \`\`\`
 
 ---
-*This issue was automatically generated from an expired TODO comment.*`;
+*This issue was automatically generated from an expired TODO comment.*
+*Identifier is content-based to prevent duplicates when line numbers change.*`;
         const labelsInput = core.getInput('issue-labels');
         const labels = labelsInput
             ? labelsInput.split(',').map(label => label.trim())
