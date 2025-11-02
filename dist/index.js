@@ -542,7 +542,11 @@ const COMMENT_PATTERNS = {
     // Languages that use -- for comments (SQL, Haskell, etc.)
     doubleDash: /--\s*(.+)$/,
     // Languages that use ; for comments (Lisp, Assembly, etc.)
-    semicolon: /;\s*(.+)$/
+    semicolon: /;\s*(.+)$/,
+    // ERB comments (<%# ... %>)
+    erb: /<%#\s*(.+?)\s*%>/,
+    // HAML comments (-# ...)
+    haml: /-#\s*(.+)$/
 };
 const FILE_ALIASES = {
     Gemfile: 'rb',
@@ -569,6 +573,10 @@ const LANGUAGE_PATTERNS = {
     yml: 'hash',
     // SQL
     sql: 'doubleDash',
+    // ERB
+    erb: 'erb',
+    // HAML
+    haml: 'haml',
     // Other languages
     java: 'doubleSlash',
     cpp: 'doubleSlash',
