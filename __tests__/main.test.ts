@@ -45,6 +45,15 @@ test('isComment', async () => {
     true
   )
 
+  // HAML - HAML comments
+  expect(isComment('test.html.haml', '-# TODO: Add tests')).toEqual(true)
+  expect(isComment('test.html.haml', '-# TODO[2025-08-30]: comment')).toEqual(
+    true
+  )
+  expect(isComment('test.html.haml', '  -# TODO: Fix indented comment')).toEqual(
+    true
+  )
+
   // Unsupported language
   expect(isComment('test.unknown', '# TODO: Add tests')).toEqual(false)
 })

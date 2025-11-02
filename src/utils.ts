@@ -8,7 +8,9 @@ const COMMENT_PATTERNS = {
   // Languages that use ; for comments (Lisp, Assembly, etc.)
   semicolon: /;\s*(.+)$/,
   // ERB comments (<%# ... %>)
-  erb: /<%#\s*(.+?)\s*%>/
+  erb: /<%#\s*(.+?)\s*%>/,
+  // HAML comments (-# ...)
+  haml: /-#\s*(.+)$/
 } as const
 
 const FILE_ALIASES: Record<string, string> = {
@@ -39,6 +41,8 @@ const LANGUAGE_PATTERNS: Record<string, keyof typeof COMMENT_PATTERNS> = {
   sql: 'doubleDash',
   // ERB
   erb: 'erb',
+  // HAML
+  haml: 'haml',
   // Other languages
   java: 'doubleSlash',
   cpp: 'doubleSlash',
