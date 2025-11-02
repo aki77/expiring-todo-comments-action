@@ -41,18 +41,18 @@ test('isComment', async () => {
   expect(
     isComment('test.html.erb', '<%# TODO[2025-08-30]: comment %>')
   ).toEqual(true)
-  expect(isComment('test.html.erb', '<div>test</div> <%# TODO: Fix %>')).toEqual(
-    true
-  )
+  expect(
+    isComment('test.html.erb', '<div>test</div> <%# TODO: Fix %>')
+  ).toEqual(true)
 
   // HAML - HAML comments
   expect(isComment('test.html.haml', '-# TODO: Add tests')).toEqual(true)
   expect(isComment('test.html.haml', '-# TODO[2025-08-30]: comment')).toEqual(
     true
   )
-  expect(isComment('test.html.haml', '  -# TODO: Fix indented comment')).toEqual(
-    true
-  )
+  expect(
+    isComment('test.html.haml', '  -# TODO: Fix indented comment')
+  ).toEqual(true)
 
   // Unsupported language
   expect(isComment('test.unknown', '# TODO: Add tests')).toEqual(false)
