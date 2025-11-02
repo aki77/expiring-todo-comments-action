@@ -9,12 +9,12 @@ test('isComment', async () => {
   expect(isComment('test.js', 'code() // TODO: Fix this')).toEqual(true)
   expect(isComment('test.ts', 'const x = 1 // TODO: Update')).toEqual(true)
 
-  // Ruby - 行頭コメント
+  // Ruby - line start comments
   expect(isComment('Gemfile', '# TODO: version up')).toEqual(true)
   expect(isComment('fixtures/Gemfile', '# TODO: version up')).toEqual(true)
   expect(isComment('fixtures/Rakefile', '# TODO: add tests')).toEqual(true)
 
-  // Ruby - 行末コメント（重要なテストケース）
+  // Ruby - inline comments (important test cases)
   expect(isComment('Gemfile', "gem 'test' # TODO: Update")).toEqual(true)
   expect(
     isComment(
@@ -36,7 +36,16 @@ test('isComment', async () => {
     isComment('test.sql', 'SELECT * FROM table -- TODO: Optimize')
   ).toEqual(true)
 
-  // 未対応の言語
+  // ERB - ERB comments
+  expect(isComment('test.html.erb', '<%# TODO: Add tests %>')).toEqual(true)
+  expect(
+    isComment('test.html.erb', '<%# TODO[2025-08-30]: comment %>')
+  ).toEqual(true)
+  expect(isComment('test.html.erb', '<div>test</div> <%# TODO: Fix %>')).toEqual(
+    true
+  )
+
+  // Unsupported language
   expect(isComment('test.unknown', '# TODO: Add tests')).toEqual(false)
 })
 
