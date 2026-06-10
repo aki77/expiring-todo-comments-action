@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: aki77/expiring-todo-comments-action@v3
+      - uses: aki77/expiring-todo-comments-action@v4
 ```
 
 ### With GitHub Issue Creation
@@ -75,7 +75,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: aki77/expiring-todo-comments-action@v3
+      - uses: aki77/expiring-todo-comments-action@v4
         with:
           create-issues: true
           github-token: ${{ github.token }}
@@ -112,7 +112,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: aki77/expiring-todo-comments-action@v3
+      - uses: aki77/expiring-todo-comments-action@v4
 ```
 
 ### Manual Trigger
@@ -129,7 +129,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: aki77/expiring-todo-comments-action@v3
+      - uses: aki77/expiring-todo-comments-action@v4
 ```
 
 ## Best Practices
