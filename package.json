@@ -8,7 +8,7 @@
     ".": "./dist/index.js"
   },
   "engines": {
-    "node": "24x"
+    "node": "^24"
   },
   "scripts": {
     "build": "tsc --noEmit",
