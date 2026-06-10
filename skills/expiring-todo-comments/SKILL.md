@@ -1,6 +1,7 @@
 ---
 name: expiring-todo-comments
 description: Write expiring TODO/FIXME comments for use with the expiring-todo-comments-action. Use this skill whenever the user asks to add a TODO comment, FIXME comment, or any time-bounded reminder comment in code — especially when they mention a deadline, date, or want the CI to catch stale comments automatically.
+license: MIT
 ---
 
 ## Format
