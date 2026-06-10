@@ -1,5 +1,5 @@
 import {expect, test} from '@jest/globals'
-import {isComment, parseBlame, parseTodoComment} from '../src/utils'
+import {isComment, parseBlame, parseTodoComment} from '../src/utils.js'
 
 test('isComment', async () => {
   // JavaScript/TypeScript

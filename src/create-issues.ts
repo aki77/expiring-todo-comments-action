@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as crypto from 'crypto'
-import {getCommitAuthorInfo} from './github-commit-helper'
-import {type Result} from './main'
+import {getCommitAuthorInfo} from './github-commit-helper.js'
+import {type Result} from './main.js'
 
 type IssueCreator = {
   createIssuesForExpiredTodos: (results: readonly Result[]) => Promise<void>

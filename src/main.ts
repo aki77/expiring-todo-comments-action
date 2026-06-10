@@ -1,9 +1,9 @@
 import * as core from '@actions/core'
 import {exec} from 'child_process'
 import {promisify} from 'util'
-import {createIssueCreator} from './create-issues'
-import {reportSummary} from './report-summary'
-import {sortBy} from './sort-by'
+import {createIssueCreator} from './create-issues.js'
+import {reportSummary} from './report-summary.js'
+import {sortBy} from './sort-by.js'
 import {
   type Blame,
   formatDate,
@@ -11,7 +11,7 @@ import {
   parseBlame,
   parseTodoComment,
   type TodoComment
-} from './utils'
+} from './utils.js'
 
 const execAsync = promisify(exec)
 
@@ -78,7 +78,7 @@ const getAllTodoCommentLines = async (): Promise<
 }
 
 // FIXME: dummy
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     const todayString = formatDate(new Date())
     const todoCommentLines = await getAllTodoCommentLines()
@@ -121,5 +121,3 @@ async function run(): Promise<void> {
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
-
-run()
