@@ -97,3 +97,6 @@ Thumbs.db
 # Ignore built ts files
 __tests__/runner/*
 lib/**/*
+
+# Rollup config compiled from rollup.config.ts by @rollup/plugin-typescript
+rollup.config.js

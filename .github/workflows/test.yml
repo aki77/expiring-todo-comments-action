@@ -27,7 +27,10 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v6
+      # This repo intentionally contains expired sample TODOs (README/fixtures),
+      # so the action correctly calls setFailed. That is expected for this smoke test.
       - uses: ./
+        continue-on-error: true
         with:
           create-issues: true
           github-token: ${{ github.token }}

@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {type Result} from './main'
+import {type Result} from './main.js'
 
 export const reportSummary = async (
   results: readonly Result[]
