@@ -43,7 +43,7 @@
     "@rollup/plugin-typescript": "^12.3.0",
     "@types/node": "^24.13.1",
     "jest": "^30.4.2",
-    "js-yaml": "^4.2.0",
+    "js-yaml": "^5.2.0",
     "rollup": "^4.57.1",
     "ts-jest": "^29.4.11",
     "ts-jest-resolver": "^2.0.1",
