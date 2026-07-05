@@ -101,7 +101,9 @@ ${result.type}${result.date ? ` [${result.date}]` : ''}: ${result.comment}
         title,
         body,
         labels,
-        ...(authorInfo.username && {assignees: [authorInfo.username]})
+        // Bot accounts cannot be assigned to issues
+        ...(authorInfo.username &&
+          !authorInfo.isBot && {assignees: [authorInfo.username]})
       }
 
       const {data: issue} = await octokit.rest.issues.create(issueParams)
