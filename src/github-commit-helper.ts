@@ -3,8 +3,14 @@ import * as github from '@actions/github'
 
 export interface GitHubCommitAuthor {
   username: string | null
+  isBot: boolean
   name: string
   email: string | undefined
+}
+
+type GitHubUsernameResult = {
+  username: string | null
+  isBot: boolean
 }
 
 /**
@@ -13,14 +19,14 @@ export interface GitHubCommitAuthor {
  * @param owner Repository owner
  * @param repo Repository name
  * @param commitSha Commit SHA
- * @returns GitHub username (if exists) or null
+ * @returns GitHub username (if exists) or null, along with whether it's a bot account
  */
 export const getGitHubUsernameFromCommit = async (
   token: string,
   owner: string,
   repo: string,
   commitSha: string
-): Promise<string | null> => {
+): Promise<GitHubUsernameResult> => {
   try {
     const octokit = github.getOctokit(token)
 
@@ -42,7 +48,10 @@ export const getGitHubUsernameFromCommit = async (
       core.debug(
         `Found GitHub username from commit author: ${commit.author.login}`
       )
-      return commit.author.login
+      return {
+        username: commit.author.login,
+        isBot: commit.author.type === 'Bot'
+      }
     }
 
     // Also check committer information (may differ from author)
@@ -51,16 +60,19 @@ export const getGitHubUsernameFromCommit = async (
       core.debug(
         `Found GitHub username from committer: ${commit.committer.login}`
       )
-      return commit.committer.login
+      return {
+        username: commit.committer.login,
+        isBot: commit.committer.type === 'Bot'
+      }
     }
 
     core.debug(`No GitHub username found for commit ${commitSha}`)
-    return null
+    return {username: null, isBot: false}
   } catch (error) {
     core.debug(
       `Failed to get GitHub username from commit ${commitSha}: ${error}`
     )
-    return null
+    return {username: null, isBot: false}
   }
 }
 
@@ -82,7 +94,7 @@ export const getCommitAuthorInfo = async (
   fallbackAuthor: string,
   fallbackEmail: string | undefined
 ): Promise<GitHubCommitAuthor> => {
-  const username = await getGitHubUsernameFromCommit(
+  const {username, isBot} = await getGitHubUsernameFromCommit(
     token,
     owner,
     repo,
@@ -91,6 +103,7 @@ export const getCommitAuthorInfo = async (
 
   return {
     username,
+    isBot,
     name: fallbackAuthor,
     email: fallbackEmail
   }

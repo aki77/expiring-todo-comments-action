@@ -33386,7 +33386,7 @@ function getOctokit(token, options, ...additionalPlugins) {
  * @param owner Repository owner
  * @param repo Repository name
  * @param commitSha Commit SHA
- * @returns GitHub username (if exists) or null
+ * @returns GitHub username (if exists) or null, along with whether it's a bot account
  */
 const getGitHubUsernameFromCommit = async (token, owner, repo, commitSha) => {
     try {
@@ -33404,20 +33404,26 @@ const getGitHubUsernameFromCommit = async (token, owner, repo, commitSha) => {
         if (commit.author?.login) {
             // When linked to a GitHub account
             debug(`Found GitHub username from commit author: ${commit.author.login}`);
-            return commit.author.login;
+            return {
+                username: commit.author.login,
+                isBot: commit.author.type === 'Bot'
+            };
         }
         // Also check committer information (may differ from author)
         if (commit.committer?.login && commit.committer.login !== 'web-flow') {
             // Exclude web-flow as it's a bot for commits via GitHub Web interface
             debug(`Found GitHub username from committer: ${commit.committer.login}`);
-            return commit.committer.login;
+            return {
+                username: commit.committer.login,
+                isBot: commit.committer.type === 'Bot'
+            };
         }
         debug(`No GitHub username found for commit ${commitSha}`);
-        return null;
+        return { username: null, isBot: false };
     }
     catch (error) {
         debug(`Failed to get GitHub username from commit ${commitSha}: ${error}`);
-        return null;
+        return { username: null, isBot: false };
     }
 };
 /**
@@ -33431,9 +33437,10 @@ const getGitHubUsernameFromCommit = async (token, owner, repo, commitSha) => {
  * @returns Author information
  */
 const getCommitAuthorInfo = async (token, owner, repo, commitSha, fallbackAuthor, fallbackEmail) => {
-    const username = await getGitHubUsernameFromCommit(token, owner, repo, commitSha);
+    const { username, isBot } = await getGitHubUsernameFromCommit(token, owner, repo, commitSha);
     return {
         username,
+        isBot,
         name: fallbackAuthor,
         email: fallbackEmail
     };
@@ -33512,7 +33519,9 @@ ${result.type}${result.date ? ` [${result.date}]` : ''}: ${result.comment}
                 title,
                 body,
                 labels,
-                ...(authorInfo.username && { assignees: [authorInfo.username] })
+                // Bot accounts cannot be assigned to issues
+                ...(authorInfo.username &&
+                    !authorInfo.isBot && { assignees: [authorInfo.username] })
             };
             const { data: issue } = await octokit.rest.issues.create(issueParams);
             info(`Created issue #${issue.number} for ${identifier}`);
